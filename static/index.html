@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Validador de texto en español con detección de errores ortográficos y de formato." />
+  <title>Validador de Texto · Español</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="bg-blur bg-blur--1"></div>
+  <div class="bg-blur bg-blur--2"></div>
+
+  <main class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header__icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="header__title">Validador de Texto</h1>
+        <p class="header__subtitle">Análisis ortográfico y de formato en español</p>
+      </div>
+    </header>
+
+    <!-- Editor Card -->
+    <section class="card editor-card" aria-label="Editor de texto">
+      <div class="card__header">
+        <span class="card__label">Escribe o pega tu texto</span>
+        <span class="counter" id="wordCount">0 palabras</span>
+      </div>
+
+      <textarea
+        id="inputText"
+        class="textarea"
+        placeholder="Ingresa aquí el texto que deseas validar..."
+        rows="8"
+        aria-label="Campo de texto para validar"
+      ></textarea>
+
+      <div class="actions">
+        <button id="clearBtn" class="btn btn--ghost" aria-label="Limpiar texto">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/>
+          </svg>
+          Limpiar
+        </button>
+        <button id="validateBtn" class="btn btn--primary" aria-label="Validar texto">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          Validar texto
+        </button>
+      </div>
+    </section>
+
+    <!-- Results Section -->
+    <section id="resultsSection" class="results-section" aria-live="polite" hidden>
+
+      <!-- Summary Bar -->
+      <div id="summaryBar" class="summary-bar"></div>
+
+      <!-- Original Highlighted Text -->
+      <div id="highlightSection" class="card corrected-card" hidden>
+        <div class="card__header">
+          <span class="card__label" style="color: var(--color-error);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Texto Original con Errores
+          </span>
+        </div>
+        <p id="highlightText" class="corrected-text"></p>
+      </div>
+
+      <!-- Error List -->
+      <div id="errorList" class="card results-card"></div>
+
+      <!-- Corrected Text -->
+      <div id="correctedSection" class="card corrected-card" hidden>
+        <div class="card__header">
+          <span class="card__label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Texto con correcciones sugeridas
+          </span>
+          <button id="copyBtn" class="btn btn--ghost btn--sm" aria-label="Copiar texto corregido">Copiar</button>
+        </div>
+        <p id="correctedText" class="corrected-text"></p>
+      </div>
+
+    </section>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="spinner-wrap" hidden aria-label="Cargando...">
+      <div class="spinner"></div>
+      <span>Analizando texto…</span>
+    </div>
+  </main>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>
