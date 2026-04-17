@@ -16,25 +16,18 @@ const correctedText = document.getElementById('correctedText');
 const loadingSpinner = document.getElementById('loadingSpinner');
 
 // =====================================================
-// CONTADOR + UX MEJORADO
+// CONTADOR DE PALABRAS EN TIEMPO REAL
 // =====================================================
 inputText.addEventListener('input', () => {
   const text = inputText.value.trim();
   const count = text === '' ? 0 : text.split(/\s+/).filter(w => w.length > 0).length;
-
   wordCount.textContent = `${count} palabra${count !== 1 ? 's' : ''}`;
 
-  // 🎨 Cambio de color dinámico
-  if (count === 0) {
-    wordCount.style.color = "#555970";
-  } else if (count < 5) {
-    wordCount.style.color = "#ffb347";
-  } else {
-    wordCount.style.color = "#43e97b";
-  }
+  // color dinámico
+  wordCount.style.color = count === 0 ? '#555970' : '#a29bff';
 
-  // 🚫 Deshabilitar botón si no hay texto
-  validateBtn.disabled = text.length === 0;
+  // desactivar botón si no hay texto
+  validateBtn.disabled = count === 0;
 });
 
 // =====================================================
@@ -43,27 +36,20 @@ inputText.addEventListener('input', () => {
 clearBtn.addEventListener('click', () => {
   inputText.value = '';
   wordCount.textContent = '0 palabras';
-  wordCount.style.color = "#555970";
+  wordCount.style.color = '#555970';
   resultsSection.hidden = true;
   validateBtn.disabled = true;
   inputText.focus();
 });
 
 // =====================================================
-// COPIAR TEXTO CORREGIDO (MEJORADO)
+// COPIAR TEXTO CORREGIDO
 // =====================================================
 copyBtn.addEventListener('click', () => {
   const texto = correctedText.textContent;
   navigator.clipboard.writeText(texto).then(() => {
     copyBtn.textContent = '✓ Copiado';
-    copyBtn.style.background = '#43e97b';
-    copyBtn.style.color = '#000';
-
-    setTimeout(() => {
-      copyBtn.textContent = 'Copiar';
-      copyBtn.style.background = '';
-      copyBtn.style.color = '';
-    }, 2000);
+    setTimeout(() => { copyBtn.textContent = 'Copiar'; }, 2000);
   });
 });
 
@@ -94,9 +80,12 @@ validateBtn.addEventListener('click', async () => {
     const data = await response.json();
     mostrarResultados(data);
 
+    // scroll automático
+    resultsSection.scrollIntoView({ behavior: 'smooth' });
+
   } catch (error) {
     console.error('Error al validar:', error);
-    mostrarMensaje('No se pudo conectar con el servidor. ¿Está ejecutando el backend?', 'error');
+    mostrarMensaje('No se pudo conectar con el servidor.', 'error');
   } finally {
     setLoading(false);
   }
@@ -107,21 +96,17 @@ validateBtn.addEventListener('click', async () => {
 // =====================================================
 function mostrarResultados(data) {
   errorList.innerHTML = '';
-  if (highlightSection) highlightSection.hidden = true;
+  highlightSection.hidden = true;
   correctedSection.hidden = true;
   resultsSection.hidden = false;
 
   const { total_errores, errores, texto_original, texto_corregido } = data;
 
-  // 🔥 Scroll automático
-  resultsSection.scrollIntoView({ behavior: 'smooth' });
-
-  // --- Summary ---
   if (total_errores === 0) {
     summaryBar.className = 'summary-bar summary-bar--success';
     summaryBar.innerHTML = `
-      <span>✅</span>
-      <span>¡Texto perfecto! No se encontraron errores.</span>
+      <span>✔</span>
+      <span>¡El texto no presenta errores detectados!</span>
     `;
     return;
   }
@@ -132,7 +117,6 @@ function mostrarResultados(data) {
     <span>Se encontraron <strong>${total_errores}</strong> problema${total_errores !== 1 ? 's' : ''} en el texto.</span>
   `;
 
-  // --- Lista errores ---
   errores.forEach((error, index) => {
     const item = document.createElement('div');
     item.className = `error-item error-item--${error.tipo}`;
@@ -169,28 +153,23 @@ function mostrarResultados(data) {
     errorList.appendChild(item);
   });
 
-  // --- Highlight errores ---
   const palabrasMal = errores
     .filter(e => e.tipo === 'ortografia' && e.palabra_original)
     .map(e => e.palabra_original);
 
-  if (palabrasMal.length > 0 && highlightSection) {
+  if (palabrasMal.length > 0) {
     let textoResaltado = escapeHTML(texto_original);
 
     palabrasMal.forEach(palabra => {
-      const safePalabra = palabra.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
-      const regex = new RegExp(`(^|[^\\p{L}\\p{N}])(${safePalabra})(?=[^\\p{L}\\p{N}]|$)`, 'giu');
-      textoResaltado = textoResaltado.replace(
-        regex,
-        `$1<mark class="highlight-error" title="Error ortográfico">$2</mark>`
-      );
+      const safe = palabra.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+      const regex = new RegExp(`(^|[^\\p{L}\\p{N}])(${safe})(?=[^\\p{L}\\p{N}]|$)`, 'giu');
+      textoResaltado = textoResaltado.replace(regex, `$1<mark class="highlight-error">$2</mark>`);
     });
 
     highlightSection.hidden = false;
     highlightText.innerHTML = textoResaltado;
   }
 
-  // --- Texto corregido ---
   if (texto_corregido && texto_corregido !== texto_original) {
     correctedSection.hidden = false;
     correctedText.textContent = texto_corregido;
@@ -204,24 +183,15 @@ function setLoading(isLoading) {
   loadingSpinner.hidden = !isLoading;
   validateBtn.disabled = isLoading;
   validateBtn.style.opacity = isLoading ? '0.6' : '1';
-
-  if (isLoading) {
-    resultsSection.hidden = true;
-  }
+  if (isLoading) resultsSection.hidden = true;
 }
 
-function mostrarMensaje(msg, tipo) {
+function mostrarMensaje(msg) {
   resultsSection.hidden = false;
   errorList.innerHTML = '';
   correctedSection.hidden = true;
 
-  const claseMap = {
-    warning: 'summary-bar--error',
-    error: 'summary-bar--error',
-    success: 'summary-bar--success'
-  };
-
-  summaryBar.className = `summary-bar ${claseMap[tipo] || 'summary-bar--error'}`;
+  summaryBar.className = 'summary-bar summary-bar--error';
   summaryBar.innerHTML = `<span>ℹ️</span><span>${msg}</span>`;
 }
 
