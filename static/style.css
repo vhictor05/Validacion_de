@@ -426,3 +426,130 @@ body {
   font-weight: 500;
   cursor: help;
 }
+/* =====================================================
+   ASSISTANT ROBOT
+   ===================================================== */
+.assistant {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.6rem;
+  z-index: 10;
+}
+
+.assistant__robot {
+  font-size: 2rem;
+  background: linear-gradient(135deg, #6d5dff, #a259ff);
+  padding: 0.6rem;
+  border-radius: 50%;
+  box-shadow: 0 4px 20px rgba(109, 93, 255, 0.5);
+  animation: float 2s ease-in-out infinite;
+}
+
+.assistant__bubble {
+  background: rgba(0,0,0,0.7);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  padding: 0.5rem 0.8rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  max-width: 200px;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+/* =====================================================
+   BACKGROUND BASE
+   ===================================================== */
+body {
+  position: relative;
+}
+
+/* =====================================================
+   BLURS DECORATIVOS
+   ===================================================== */
+.bg-blur {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-blur--1 {
+  width: 500px;
+  height: 500px;
+  background: var(--color-primary);
+  top: -150px;
+  left: -150px;
+}
+
+.bg-blur--2 {
+  width: 400px;
+  height: 400px;
+  background: #ff5f6d;
+  bottom: -120px;
+  right: -100px;
+}
+
+/* =====================================================
+   LETRAS FLOTANTES (EFECTO MATRIX SUAVE)
+   ===================================================== */
+body::before {
+  content: "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+
+  font-size: 14px;
+  letter-spacing: 18px;
+  color: rgba(255, 255, 255, 0.05);
+  white-space: pre-wrap;
+  word-break: break-word;
+
+  animation: moveLetters 25s linear infinite;
+}
+
+/* =====================================================
+   CAPA DE ESTRELLAS
+   ===================================================== */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+
+  background-image: radial-gradient(rgba(255,255,255,0.12) 1px, transparent 1px);
+  background-size: 4px 4px;
+  opacity: 0.18;
+
+  animation: moveStars 60s linear infinite;
+}
+
+/* =====================================================
+   ANIMACIONES
+   ===================================================== */
+@keyframes moveLetters {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-200px, 200px);
+  }
+}
+
+@keyframes moveStars {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-200px);
+  }
+}

@@ -89,7 +89,7 @@ def validar_texto(entrada: TextoEntrada):
                 for match in matches_sorted:
                     offset = match['offset']
                     length = match['length']
-                    palabra_original = texto[offset:offset+length]
+                    palabra_original = texto_corregido[offset:offset+length]
                     mensaje = match['message']
                     tipo_match = match.get('rule', {}).get('issueType', 'ortografia')
                     
